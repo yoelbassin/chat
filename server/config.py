@@ -11,8 +11,9 @@ clients = {}
 def open_db():
     global users
     infile = open('users.json', 'r')
-    users = infile.read()
+    users = json.loads(infile.read())
     infile.close()
+    print(users)
     return users
 
 
