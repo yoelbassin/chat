@@ -1,13 +1,15 @@
 import config
 from config import *
+import const
 
 
 def handle_user(server_socket):
     client_socket, client_address = server_socket.accept()
-    code = client_socket.recv(3).decode().lower()
+    code = client_socket.recv(const.CODE_LEN).decode().upper()
     data = client_socket.recv(1024).decode()
+    print(data)
     print(config.users)
-    if code == 'lgn':
+    if code == const.login_code:
         if len(data.split("~")) != 2:
             client_socket.send("Please enter your credentials".encode())
             return
@@ -26,7 +28,7 @@ def handle_user(server_socket):
         else:
             client_socket.send("wrong credentials".encode())
             return
-    if code == 'rgs':
+    if code == const.register_code:
         print(data)
         if len(data.split("~")) != 2:
             client_socket.send("Please enter your registration credentials".encode())
@@ -34,7 +36,7 @@ def handle_user(server_socket):
         uname = data.split("~")[0]
         pwd = data.split("~")[1]
         # TO DO - password confirmation
-        if uname in users:
+        if uname in config.users:
             client_socket.send("Users already exists".encode())
             return
         else:

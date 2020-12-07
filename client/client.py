@@ -10,7 +10,7 @@ client = socket.socket()  # socket place holder
 
 def login():
     global uname
-    code = 'lgn'
+    code = 'LOGIN'
     uname = input('Username: ')
     pwd = input('Password: ')  # TO DO - invisible password
     return code + uname + '~' + pwd
@@ -18,7 +18,7 @@ def login():
 
 def register():
     global uname
-    code = 'rgs'
+    code = 'RGSTR'
     uname = input('Username: ')
     pwd = input('Password: ')  # TO DO - invisible password
     return code + uname + '~' + pwd
@@ -63,7 +63,8 @@ def receive():
 
 def write():
     while True:  # message layout
-        message = '{}: {}'.format(uname, input(''))
+        # message = '{}: {}'.format(uname, input(''))
+        message = '{}'.format(input(''))
         client.send(message.encode())
 
 
