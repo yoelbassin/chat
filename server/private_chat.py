@@ -13,15 +13,17 @@ def create_request(client_socket):
     :return:
     """
     data = client_socket.recv(config.MAX_MSG_LENGTH).decode()
+    # get the destination user name
     dst = data.split("~")[0]
+    # get the source user name
     src = config.get_uname(client_socket)
 
-    # if the client already has an active request for a private chat
+    # if the client already has an active request for a private chat - error
     if src in config.private_requests or src in config.private_requests.values():
         client_socket.send(const.already_has_private_chat_request_code.encode())
         return
 
-    # if the client is already in a private chat
+    # if the client is already in a private chat - error
     if src in config.active_private or src in config.active_private.values():
         client_socket.send(const.already_in_private_chat_error.encode())
         return
@@ -48,19 +50,27 @@ def create_chat(client_socket):
     """
     data = client_socket.recv(config.MAX_MSG_LENGTH).decode()
     print(data)
+    # get the destination user name
     dst = data.split("~")[0]
+    # get the source user name
     src = config.get_uname(client_socket)
     print(config.private_requests)
     print(src, dst)
+    # if there exists a request for a private chat for dst and src
     if (src, dst) in config.private_requests.items() or (dst, src) in config.private_requests.items():
+        # the source already in a private chat - error
+        """
         if src in config.active_private or src in config.active_private.values():
             client_socket.send(const.already_in_private_chat_error.encode())
             print("already in private chat")
-            return
+            return"""
+        # if the destination user is not connected - error
         if dst not in config.clients:
             client_socket.send(const.user_not_connected_error.encode())
             print("user not connected")
             return
+
+        # if everything is ok, create a chat room
         config.active_private[config.clients[src]] = config.clients[dst]
 
         config.clients[src].send((const.private_chat_accepted_code + dst).encode())
@@ -68,6 +78,7 @@ def create_chat(client_socket):
 
         print("chat created")
         return
+    # if there isn't a request for a private chat for dst and src - error
     else:
         client_socket.send(const.chat_request_pair_error.encode())
         print("request error")
@@ -82,17 +93,20 @@ def decline_chat(client_socket):
     :return:
     """
     data = client_socket.recv(config.MAX_MSG_LENGTH).decode()
+    # get the destination user name
     dst = data.split("~")[0]
-    print(dst)
+    # get the source user name
     src = config.get_uname(client_socket)
-    dst_socket = config.get_uname(dst)
+    print(config.private_requests)
+    print(src, dst)
+    # if there exists a request for a private chat for dst and src
     if (src, dst) in config.private_requests.items() or (dst, src) in config.private_requests.items():
         if src in config.private_requests:
             config.private_requests.pop(src)
         else:
             config.private_requests.pop(dst)
-        client_socket.send((const.private_chat_denied_code + dst).encode())
-        dst_socket.send((const.private_chat_denied_code + src).encode())
+        config.clients[src].send((const.private_chat_denied_code + dst).encode())
+        config.clients[dst].send((const.private_chat_denied_code + src).encode())
 
 
 def handle_chat(client_socket):
@@ -121,6 +135,15 @@ def handle_chat(client_socket):
     if code == const.msg_code:
         data = const.msg_code
 
+    elif code == const.accept_private_chat_code:
+        end_chat(client_socket)
+        create_chat(client_socket)
+        return True
+
+    # if code was denial of a chat request
+    elif code == const.deny_private_chat_code:
+        decline_chat(client_socket)
+        return True
     else:
         data = code
 
@@ -129,3 +152,16 @@ def handle_chat(client_socket):
     dst.send(data.encode())
     # return that everything is ok
     return True
+
+
+def end_chat(client_socket):
+    # get the destination socket
+    if client_socket in config.active_private:
+        dst = config.active_private[client_socket]
+    else:
+        dst = config.get_by_value(client_socket, config.active_private)
+    dst.send(const.end_chat_code.encode())
+    if dst in config.active_private:
+        config.active_private.pop(dst)
+    else:
+        config.active_private.pop(client_socket)

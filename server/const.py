@@ -16,4 +16,6 @@ already_has_private_chat_request_code = 'AHPCR'
 chat_request_pair_error =               'CRPER'
 dest_already_in_chat =                  'DAICE'
 
+end_chat_code =                         'ENDCC'
+
 user_not_connected_error =              'UNCER'
