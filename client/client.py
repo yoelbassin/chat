@@ -1,11 +1,7 @@
-# Coded by Yashraj Singh Chouhan
-import socket
 import threading
-import time
 import const
 import config
 import private_chat
-import sys
 import establish_connection
 
 
@@ -15,8 +11,9 @@ def receive():
             code = config.client.recv(5).decode()
             if code == '':
                 continue
+
             # if code is a private chat request code
-            if code == const.private_chat_request_code and not config.active_chat:
+            if code == const.private_chat_request_code:
                 private_chat.recv_private_chat_request()
 
             # if code is accepted private chat code
@@ -26,14 +23,17 @@ def receive():
                 if name in config.active_requests:
                     config.active_requests.remove(name)
                     config.active_chat = '[' + name + ']$~'
+
             # if code is message code
             elif code == const.msg_code:
                 message = config.client.recv(1024).decode()
                 if message != '':
                     print(config.active_chat + message)
+
             elif code == const.private_chat_request_sent_code:
                 src = config.client.recv(1024).decode()
                 print("Private chat request sent successfully to " + src)
+
             elif code == const.private_chat_denied_code:
                 src = config.client.recv(1024).decode()
                 print(src + " refused you invite")
