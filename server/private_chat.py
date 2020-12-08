@@ -26,7 +26,7 @@ def create_request(client_socket):
         return
     config.clients[dst].send((const.private_chat_request_code + src).encode())  # TO DO - encrypt with dst
     # public key
-    client_socket.send(const.private_chat_request_sent_code.encode())
+    client_socket.send((const.private_chat_request_sent_code + dst).encode())
     config.private_requests[src] = dst  # TO DO - encrypt with servers key
     return
 
@@ -54,8 +54,10 @@ def create_chat(client_socket):
             print("user not connected")
             return
         config.active_private[config.clients[src]] = config.clients[dst]
-        client_socket.send((const.private_chat_accepted_code + dst).encode())
+
+        config.clients[src].send((const.private_chat_accepted_code + dst).encode())
         config.clients[dst].send((const.private_chat_accepted_code + src).encode())
+
         print("chat created")
         return
     else:

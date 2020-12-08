@@ -43,7 +43,7 @@ def get_by_value(value, dic):
 def end_connection_with_socket(client_socket):
     uname = get_uname(client_socket)
     clients.pop(uname)
-    print("connection with " + uname + 'have been interrupted')
+    print("connection with " + uname + ' have been interrupted')
     client_sockets.remove(client_socket)
     # if client in a private chat
     if client_socket in active_private:

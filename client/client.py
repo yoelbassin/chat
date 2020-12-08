@@ -13,22 +13,30 @@ def receive():
     while True:  # making valid connection
         try:
             code = config.client.recv(5).decode()
-            if code != '':
-                print(code)
-
+            if code == '':
+                continue
             # if code is a private chat request code
             if code == const.private_chat_request_code and not config.active_chat:
                 private_chat.recv_private_chat_request()
 
             # if code is accepted private chat code
             elif code == const.private_chat_accepted_code:
-                config.active_chat = '[' + config.active_chat + ']$~'
-
+                name = config.client.recv(1024).decode().split('~')[0]
+                print("private chat started with " + name)
+                if name in config.active_requests:
+                    config.active_requests.remove(name)
+                    config.active_chat = '[' + name + ']$~'
             # if code is message code
             elif code == const.msg_code:
                 message = config.client.recv(1024).decode()
                 if message != '':
                     print(config.active_chat + message)
+            elif code == const.private_chat_request_sent_code:
+                src = config.client.recv(1024).decode()
+                print("Private chat request sent successfully to " + src)
+            elif code == const.private_chat_denied_code:
+                src = config.client.recv(1024).decode()
+                print(src + " refused you invite")
             else:
                 config.client.recv(1024)
 
@@ -44,6 +52,8 @@ def write():
         message = '{}'.format(input(''))
         if len(config.active_requests) > 0:
             private_chat.answer_private_chat_request(message)
+        elif config.active_chat:
+            private_chat.handle_chat(message)
         elif 'send private to' in message and not config.active_chat:
             private_chat.create_private_chat_request(input('uname: '))
         else:
