@@ -1,19 +1,19 @@
 CODE_LEN = 5
 
-error_code = 'ERROR'
+error_code =                            'ERROR'
+login_code =                            'LOGIN'
+register_code =                         'RGSTR'
+msg_code =                              'MESSG'
 
-login_code = 'LOGIN'
-register_code = 'RGSTR'
-
-msg_code = 'MESSG'
-private_chat_request_code = 'PRIVR'
-private_chat_request_sent_code = 'PRCRS'
-accept_private_chat_code = 'ACPRC'
-private_chat_accepted_code = 'PRCAC'
-deny_private_chat_code = 'DEPRC'
-private_chat_denied_code = 'PRDEC'
-already_in_private_chat_error = 'AIPER'
+private_chat_request_code =             'PRIVR'
+private_chat_request_sent_code =        'PRCRS'
+accept_private_chat_code =              'ACPRC'
+private_chat_accepted_code =            'PRCAC'
+deny_private_chat_code =                'DEPRC'
+private_chat_denied_code =              'PRDEC'
+already_in_private_chat_error =         'AIPER'
 already_has_private_chat_request_code = 'AHPCR'
-chat_request_pair_error = "CRPER"
+chat_request_pair_error =               'CRPER'
+dest_already_in_chat =                  'DAICE'
 
-user_not_connected_error = 'UNCER'
+user_not_connected_error =              'UNCER'
