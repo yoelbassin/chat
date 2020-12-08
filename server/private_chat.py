@@ -15,13 +15,16 @@ def create_request(client_socket):
     data = client_socket.recv(config.MAX_MSG_LENGTH).decode()
     dst = data.split("~")[0]
     src = config.get_uname(client_socket)
+    if src in config.private_requests or src in config.private_requests.values():
+        client_socket.send(const.already_has_private_chat_request_code.encode())
+        return
     if src in config.active_private or src in config.active_private.values():
         client_socket.send(const.already_in_private_chat_error.encode())
         return
     if dst not in config.clients:
         client_socket.send(const.user_not_connected_error.encode())
         return
-    config.clients[dst].send((const.private_chat_request_code + src + ' ').encode())  # TO DO - encrypt with dst
+    config.clients[dst].send((const.private_chat_request_code + src).encode())  # TO DO - encrypt with dst
     # public key
     client_socket.send(const.private_chat_request_sent_code.encode())
     config.private_requests[src] = dst  # TO DO - encrypt with servers key
@@ -36,26 +39,64 @@ def create_chat(client_socket):
     :return:
     """
     data = client_socket.recv(config.MAX_MSG_LENGTH).decode()
+    print(data)
     dst = data.split("~")[0]
     src = config.get_uname(client_socket)
+    print(config.private_requests)
+    print(src, dst)
     if (src, dst) in config.private_requests.items() or (dst, src) in config.private_requests.items():
         if src in config.active_private or src in config.active_private.values():
             client_socket.send(const.already_in_private_chat_error.encode())
+            print("already in private chat")
             return
         if dst not in config.clients:
             client_socket.send(const.user_not_connected_error.encode())
+            print("user not connected")
             return
         config.active_private[config.clients[src]] = config.clients[dst]
+        client_socket.send((const.private_chat_accepted_code + dst).encode())
+        config.clients[dst].send((const.private_chat_accepted_code + src).encode())
+        print("chat created")
         return
     else:
         client_socket.send(const.chat_request_pair_error.encode())
+        print("request error")
         return
 
 
+def decline_chat(client_socket):
+    """
+
+
+    :param client_socket:
+    :return:
+    """
+    data = client_socket.recv(config.MAX_MSG_LENGTH).decode()
+    dst = data.split("~")[0]
+    print(dst)
+    src = config.get_uname(client_socket)
+    dst_socket = config.get_uname(dst)
+    if (src, dst) in config.private_requests.items() or (dst, src) in config.private_requests.items():
+        if src in config.private_requests:
+            config.private_requests.pop(src)
+        else:
+            config.private_requests.pop(dst)
+        client_socket.send((const.private_chat_denied_code + dst).encode())
+        dst_socket.send((const.private_chat_denied_code + src).encode())
+
+
 def handle_chat(client_socket):
-    src = client_socket
-    if src in config.active_private:
-        dst = config.active_private[src]
+    if client_socket in config.active_private:
+        dst = config.active_private[client_socket]
     else:
-        dst = config.get_by_value(src, config.active_private)
-    dst.send(src.recv(1024))
+        dst = config.get_by_value(client_socket, config.active_private)
+    try:
+        code = client_socket.recv(5).decode()
+    except ConnectionResetError:
+        return False
+    data = ''
+    if code == const.msg_code:
+        data = const.msg_code
+    data += client_socket.recv(1024).decode()
+    dst.send(data.encode())
+    return True
