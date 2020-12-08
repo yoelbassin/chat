@@ -15,15 +15,23 @@ def create_request(client_socket):
     data = client_socket.recv(config.MAX_MSG_LENGTH).decode()
     dst = data.split("~")[0]
     src = config.get_uname(client_socket)
+
+    # if the client already has an active request for a private chat
     if src in config.private_requests or src in config.private_requests.values():
         client_socket.send(const.already_has_private_chat_request_code.encode())
         return
+
+    # if the client is already in a private chat
     if src in config.active_private or src in config.active_private.values():
         client_socket.send(const.already_in_private_chat_error.encode())
         return
+
+    # if the destination user is not connected to the server
     if dst not in config.clients:
         client_socket.send(const.user_not_connected_error.encode())
         return
+
+    # if the client is connected to the server and everything is ok
     config.clients[dst].send((const.private_chat_request_code + src).encode())  # TO DO - encrypt with dst
     # public key
     client_socket.send(const.private_chat_request_sent_code.encode())
@@ -86,17 +94,36 @@ def decline_chat(client_socket):
 
 
 def handle_chat(client_socket):
+    """
+    handle an active chat
+
+    :param client_socket:
+    :return:
+    """
+    # get the destination socket
     if client_socket in config.active_private:
         dst = config.active_private[client_socket]
     else:
         dst = config.get_by_value(client_socket, config.active_private)
+
     try:
         code = client_socket.recv(5).decode()
     except ConnectionResetError:
+        # If the client disconnected, return false
         return False
-    data = ''
+
+    # if the code type is 'EXIT', end the private chat connection and update the destination
+    # TO DO
+
+    # if the data type is a message, forward it to the destination
     if code == const.msg_code:
         data = const.msg_code
+
+    else:
+        data = code
+
+    # forward the data to the destination
     data += client_socket.recv(1024).decode()
     dst.send(data.encode())
+    # return that everything is ok
     return True
