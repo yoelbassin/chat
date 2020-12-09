@@ -21,9 +21,32 @@ style = style_from_dict({
 
 
 def welcome():
-    # os.system('cls')
+    os.system('cls')
     # using termcolor for coloring output text
-    cprint(" Welcome to Secure Terminal Chat Network", 'green', attrs=['bold'], file=sys.stderr)
+    cprint("Welcome!", 'green', attrs=['bold'], file=sys.stderr)
+
+
+def username():
+    questions = [
+        {
+            'type': 'input',
+            'name': 'uname',
+            'message': 'Username: ',
+        }
+    ]
+    return prompt(questions, style=style)['uname']
+
+
+def pwd():
+    questions = [
+        {
+            'type': 'password',
+            'name': 'pwd',
+            'message': 'Password: ',
+        }
+    ]
+    return prompt(questions, style=style)['pwd']
+
 
 
 def log_screen():
@@ -32,7 +55,7 @@ def log_screen():
         {
             'type': 'list',
             'name': 'log',
-            'message': 'Please choose:',
+            'message': 'enter your credentials:',
             'choices': ['login', 'registration'],
             'default': 'login'
         }
@@ -57,7 +80,7 @@ def log_screen():
         data = config.client.recv(1024).decode()
 
         if data == const.login_successfully_code:
-            # os.system("cls")
+            os.system("cls")
             print("")
             cprint("logged in successfully", "cyan")
             print("")
@@ -69,11 +92,11 @@ def log_screen():
             print(" ")
 
 
-def new_connection(username):
+def new_connection(uname):
     questions = [
         {
             'type': 'confirm',
-            'message': username + ' invited you to a private chat, accept invitation?',
+            'message': uname + ' invited you to a private chat, accept invitation?',
             'name': 'private_request',
             'default': True
         }

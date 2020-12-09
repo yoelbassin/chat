@@ -2,19 +2,20 @@ import socket
 import const
 import config
 import time
+import ui
 
 
 def login():
     code = const.login_code
-    config.uname = input('Username: ')
-    pwd = input('Password: ')  # TO DO - invisible password
+    config.uname = ui.username()
+    pwd = ui.pwd()  # TO DO - invisible password
     return code + config.uname + '~' + pwd
 
 
 def register():
     code = const.register_code
-    config.uname = input('Username: ')
-    pwd = input('Password: ')  # TO DO - invisible password
+    config.uname = ui.username()
+    pwd = ui.pwd()  # TO DO - invisible password
     return code + config.uname + '~' + pwd
 
 
