@@ -127,13 +127,15 @@ def menu():
         if private_chat.create_private_chat_request(ans2['user']):
             if private_chat.wait_for_connection():
                 chat_IO.write_thread.start()
-                chat_IO.print_incoming()
-                print("hello")
+                chat_IO.print_thread.start()
+                return
+        config.flag = False
 
     elif ans['start'] == 'wait for a request':
         if private_chat.wait_for_connection():
             chat_IO.write_thread.start()
-            chat_IO.print_incoming()
-            print("hello")
+            chat_IO.print_thread.start()
+            return
+        config.flag = False
     elif ans['start'] == 'exit':
         config.running = False

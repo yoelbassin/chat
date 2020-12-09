@@ -101,8 +101,6 @@ def wait_for_connection():
             packet = config.incoming_que.popleft()
             code = packet[:5]
 
-            print(code)
-
             # if code is a private chat request code
             if code == const.private_chat_request_code:
                 config.lock = True
@@ -110,12 +108,9 @@ def wait_for_connection():
 
             # if code is accepted private chat code
             elif code == const.private_chat_accepted_code:
-                name = packet[5:].split('~')[0]
-                print("private chat started with " + name)
-                print('number of current threads is ', threading.active_count())
-                if name in config.active_requests:
-                    config.active_requests.remove(name)
-                    config.active_chat = '[' + name + ']$~'
+                name = config.rem_req(packet)
+                print("chat with " + name + " started")
+                config.active_chat = '[' + name + ']$~'
                 return True
 
             elif code == const.private_chat_request_sent_code:
@@ -123,18 +118,30 @@ def wait_for_connection():
                 print("Private chat request sent successfully to " + src)
 
             elif code == const.user_not_connected_error:
-                print("destination not connected")
-                if config.active_requests: config.active_requests.pop()
-                config.client.send(const.close_private_request_code.encode())
+                print(config.rem_req(packet) + " not connected")
                 return False
 
             elif code == const.private_chat_denied_code:
-                src = packet[5:]
-                if src in config.active_requests:
-                    config.active_requests.remove(src)
-                    print(src + " refused your invite")
+                print(config.rem_req(packet) + " refused your invite")
+                return False
+
+            elif code == const.chat_request_pair_error:
+                print("Connection error: Cant connect with " + config.rem_req(
+                    packet) + "\nRequest error or request is no longer active")
+                return False
+
+            elif code == const.already_has_private_chat_request_code:
+                print("You already have an active request")
+                config.rem_req(packet)
+                return False
+
+            elif code == const.already_in_private_chat_error:
+                print("You still in a private chat!")
+                config.rem_req(packet)
+                return False
 
             else:
+                print(code)  # for debugging purposes
                 continue
 
         except Exception as e:

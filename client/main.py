@@ -5,6 +5,7 @@ import threading
 import sys
 import chat_IO
 import time
+import timeout
 
 
 def receive():
@@ -36,10 +37,15 @@ def main():
         print("exiting")
         return
     receive_thread.start()
+    ui.menu()
     while config.running:
-        if not chat_IO.write_thread.is_alive() and not chat_IO.print_thread.is_alive():
-            ui.menu()
-        time.sleep(0.2)
+        if not config.flag:
+            timeout.err = False
+            print(chat_IO.write_thread.is_alive())
+            print(chat_IO.print_thread.is_alive())
+            if not chat_IO.print_thread.is_alive() and not chat_IO.write_thread.is_alive():
+                ui.menu()
+        time.sleep(1)
 
 
 receive_thread = threading.Thread(target=receive, daemon=True)  # receiving multiple messages

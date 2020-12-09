@@ -74,6 +74,8 @@ def print_incoming():
 
             elif code == const.end_chat_code:
                 print("Chat with " + config.active_chat + " ended")
+                config.flag = False
+                return private_chat.exit_private_chat()
 
             elif code == const.private_chat_denied_code:
                 src = packet[5:]
@@ -87,5 +89,5 @@ def print_incoming():
             break
 
 
-print_thread = threading.Thread(target=print_incoming)  # printing the packets received
-write_thread = threading.Thread(target=write)  # sending messages
+print_thread = threading.Thread(target=print_incoming, daemon=True)  # printing the packets received
+write_thread = threading.Thread(target=write, daemon=True)  # sending messages

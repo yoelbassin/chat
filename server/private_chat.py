@@ -21,22 +21,22 @@ def create_request(client_socket, msg):
     src = config.get_uname(client_socket)
 
     if src == dst:
-        client_socket.send(const.chat_request_pair_error.encode())
+        client_socket.send((const.chat_request_pair_error+src).encode())
         return
 
     # if the client (source) already has an active request for a private chat - error
     if src in config.private_requests.values():
-        client_socket.send(const.already_has_private_chat_request_code.encode())
+        client_socket.send((const.already_has_private_chat_request_code+dst).encode())
         return
 
     # if the client sent a request for a private chat (TO DO - 10 seconds countdown)
     if src in config.private_requests:
-        client_socket.send(const.already_has_private_chat_request_code.encode())
+        client_socket.send((const.already_has_private_chat_request_code+dst).encode())
         return
 
     # if the client is already in a private chat - error
     if src in config.active_private or src in config.active_private.values():
-        client_socket.send(const.already_in_private_chat_error.encode())
+        client_socket.send((const.already_in_private_chat_error+dst).encode())
         return
 
     # if the destination user is not connected to the server
@@ -92,11 +92,7 @@ def answer_chat_req(client_socket, msg):
 
         :return:
         """
-        if src in config.private_requests:
-            config.private_requests.pop(src)
-        else:
-            config.private_requests.pop(dst)
-        config.clients[src].send((const.private_chat_denied_code + dst).encode())
+        config.clients[dst].send((const.private_chat_denied_code + src).encode())
         # config.clients[dst].send((const.private_chat_denied_code + src).encode())
 
     data = msg[const.CODE_LEN:]
@@ -110,14 +106,17 @@ def answer_chat_req(client_socket, msg):
     print(src, dst)
     # if there exists a request for a private chat for dst and src
     if (src, dst) in config.private_requests.items() or (dst, src) in config.private_requests.items():
-        print("hey")
         if code == const.deny_private_chat_code:
             decline_chat()
         elif code == const.accept_private_chat_code:
             accept_chat()
+        if src in config.private_requests:
+            config.private_requests.pop(src)
+        else:
+            config.private_requests.pop(dst)
     # if there isn't a request for a private chat for dst and src - error
     else:
-        client_socket.send(const.chat_request_pair_error.encode())
+        client_socket.send((const.chat_request_pair_error+dst).encode())
         print("request error or request is no longer active")
         return
 
@@ -177,6 +176,6 @@ def end_chat(client_socket):
 
 
 def close_private_request(client_socket):
-    name = get_uname(client_socket)
+    name = config.get_uname(client_socket)
     if name in config.private_requests:
-        active_private.pop(name)
+        config.private_requests.pop(name)

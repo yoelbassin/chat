@@ -1,4 +1,5 @@
 import json
+import private_chat
 
 MAX_MSG_LENGTH = 1024
 SERVER_PORT = 5555
@@ -47,6 +48,7 @@ def end_connection_with_socket(client_socket):
     print("connection with " + uname + ' have been interrupted')
     client_sockets.remove(client_socket)
     # if client in a private chat
+    private_chat.end_chat(client_socket)
     if client_socket in active_private:
         active_private.pop(client_socket)
     if client_socket in active_private.values():
