@@ -9,6 +9,7 @@ import const
 import os
 import private_chat
 import main
+import chat_IO
 
 style = style_from_dict({
     Token.QuestionMark: '#E91E63 bold',
@@ -20,7 +21,7 @@ style = style_from_dict({
 
 
 def welcome():
-    os.system('cls')
+    # os.system('cls')
     # using termcolor for coloring output text
     cprint(" Welcome to Secure Terminal Chat Network", 'green', attrs=['bold'], file=sys.stderr)
 
@@ -54,17 +55,17 @@ def log_screen():
             continue
         config.client.send(data.encode())
         data = config.client.recv(1024).decode()
-        print(data)
 
         if data == const.login_successfully_code:
-            os.system("cls")
+            # os.system("cls")
             print("")
-            cprint(" logged in successfully", "cyan")
+            cprint("logged in successfully", "cyan")
+            print("")
             return True
 
         else:
             config.client.close()
-            cprint(" incorrect credentials", "red")
+            cprint("incorrect credentials", "red")
             print(" ")
 
 
@@ -88,28 +89,27 @@ def menu():
             'type': 'list',
             'name': 'start',
             'message': 'MENU:',
-            'choices': ['create private chat', 'enter the system', 'exit'],
+            'choices': ['create private chat', 'wait for a request', 'exit'],
         }
     ]
     ans = prompt(questions, style=style)
-    if ans == 'create private chat':
-        questions = [
+    if ans['start'] == 'create private chat':
+        questions2 = [
             {
                 'type': 'input',
                 'name': 'user',
                 'message': 'Destination user: '
             }
         ]
-        ans = prompt(questions, style=style)
-        if private_chat.create_private_chat_request(ans):
-            return
-    elif ans == 'enter the system':
-        return
-    elif ans == 'exit':
-        sys.exit()
+        ans2 = prompt(questions2, style=style)
 
-
-if __name__ == '__main__':
-    welcome()
-    log_screen()
-    menu()
+        if private_chat.create_private_chat_request(ans2['user']):
+            if private_chat.wait_for_connection():
+                chat_IO.write_thread.start()
+                chat_IO.print_thread.start()
+    elif ans['start'] == 'wait for a request':
+        if private_chat.wait_for_connection():
+            chat_IO.write_thread.start()
+            chat_IO.print_thread.start()
+    elif ans['start'] == 'exit':
+        config.running = False

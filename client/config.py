@@ -12,5 +12,6 @@ lock = False
 
 active_chat = ''
 
+flag = True
 
-
+running = True
