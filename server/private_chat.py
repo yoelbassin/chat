@@ -147,8 +147,11 @@ def handle_chat(client_socket):
     else:
         data = code
 
-    # forward the data to the destination
-    data += client_socket.recv(1024).decode()
+    try:
+        # forward the data to the destination
+        data += client_socket.recv(1024).decode()
+    except ConnectionResetError:
+        return False
     dst.send(data.encode())
     # return that everything is ok
     return True

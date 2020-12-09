@@ -20,7 +20,7 @@ def handle_user(server_socket):
             return
         if uname in config.users and config.users[uname] == pwd:
             print("New connection: ", client_address, " nickname: " + uname)
-            client_socket.send(("Hello " + uname + "!").encode())
+            client_socket.send(const.login_successfully_code.encode())
             for client in config.client_sockets:
                 client.send((uname + " connected!").encode())
             config.client_sockets.append(client_socket)
@@ -42,7 +42,7 @@ def handle_user(server_socket):
         else:
             config.users[uname] = pwd
             print("New user joined\nconnection: ", client_address, " nickname: " + uname)
-            client_socket.send(("Hello " + uname + "!").encode())
+            client_socket.send(const.login_successfully_code.encode())
             for client in config.client_sockets:
                 client.send((uname + " connected!").encode())
             config.client_sockets.append(client_socket)

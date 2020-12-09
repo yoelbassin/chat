@@ -3,26 +3,39 @@ import const
 import config
 import private_chat
 import establish_connection
+import ui
+from timeout import inputimeout, TimeoutOccurred
 
 
 def receive():
+    """
+    receive packets and send them to the que for analyzing
+
+    :return:
+    """
     while True:  # making valid connection
-        try:
-            message = config.client.recv(1024).decode()
-            if message != '':
-                config.incoming_que.append(message)
-        except Exception as e:  # case on wrong ip/port details
-            print("An error occurred: " + str(e))
-            config.client.close()
-            break
+
+        # get the message from the server
+        message = config.client.recv(1024).decode()
+        if message != '':
+            # send the message to the que
+            config.incoming_que.append(message)
 
 
 def write():
+    """
+    get input from the user and send it to the server
+
+    :return:
+    """
     while True:  # message layout
-        # message = '{}: {}'.format(uname, input(''))
-        message = '{}'.format(input(''))
+        try:
+            config.lock = False
+            message = inputimeout(timeout=5)
+            print('[' + config.uname + ']$~' + message)
+        except TimeoutOccurred:
+            continue
         if len(config.active_requests) > 0:
-            private_chat.answer_private_chat_request(message)
             config.lock = False
         elif config.active_chat:
             private_chat.handle_chat(message)
@@ -44,8 +57,8 @@ def print_incoming():
 
             # if code is a private chat request code
             if code == const.private_chat_request_code:
-                private_chat.recv_private_chat_request(packet)
                 config.lock = True
+                private_chat.recv_private_chat_request(packet)
 
             # if code is accepted private chat code
             elif code == const.private_chat_accepted_code:
@@ -86,9 +99,14 @@ write_thread = threading.Thread(target=write)  # sending messages
 
 
 def main():
-    if not establish_connection.establish_connection():
-        print("Exiting program")
+    # if not establish_connection.establish_connection():
+    #   print("Exiting program")
+    #    return
+    ui.welcome()
+    if not ui.log_screen():
+        print("exiting")
         return
+    ui.menu()
     receive_thread.start()
     write_thread.start()
     print_thread.start()

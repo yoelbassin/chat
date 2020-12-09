@@ -1,5 +1,11 @@
+from io import StringIO
+
+import ui
 import config
 import const
+import sys
+from main import write_thread
+import timeout
 
 
 def recv_private_chat_request(packet):
@@ -12,7 +18,9 @@ def recv_private_chat_request(packet):
     src_name = data.split("~")[0]
     # add the invitation the the invitation list
     config.active_requests.append(src_name)
-    print(src_name + " sent you a private chat request, would you like to accept it? Y/N")
+    timeout.err = False
+    answer_private_chat_request(ui.new_connection(src_name))
+    config.lock = False
     return
 
 
@@ -27,14 +35,14 @@ def answer_private_chat_request(message):
     while True:
         # If the invitation is accepted, send accept message to the server and remove it from the active requests
         # list and update the active chat field
-        if message.upper() == 'Y':
+        if message:
             config.client.send((const.accept_private_chat_code + src_name).encode())
             config.active_requests.pop()
             config.active_chat = '[' + src_name + ']$~'
             return
 
         # If the invitation is declined, send decline message to the server and remove it from the active requests list
-        elif message.upper() == 'N':
+        elif not message:
             config.client.send((const.deny_private_chat_code + src_name).encode())
             config.active_requests.pop()
             return
@@ -50,8 +58,11 @@ def create_private_chat_request(name):
     :param name:
     :return:
     """
-    config.active_requests.append(name)
-    config.client.send((const.private_chat_request_code+name).encode())
+    if not config.active_chat:
+        config.active_requests.append(name)
+        config.client.send((const.private_chat_request_code+name).encode())
+        return True
+    return False
 
 
 def handle_chat(message):

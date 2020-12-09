@@ -4,6 +4,7 @@ error_code =                            'ERROR'
 login_code =                            'LOGIN'
 register_code =                         'RGSTR'
 msg_code =                              'MESSG'
+login_successfully_code =               'LOGSC'
 
 private_chat_request_code =             'PRIVR'
 private_chat_request_sent_code =        'PRCRS'
