@@ -8,6 +8,7 @@ import sys
 import timeout
 from termcolor import cprint
 import keyboard
+import threading
 
 
 def recv_private_chat_request(packet):
@@ -111,6 +112,7 @@ def wait_for_connection():
             elif code == const.private_chat_accepted_code:
                 name = packet[5:].split('~')[0]
                 print("private chat started with " + name)
+                print('number of current threads is ', threading.active_count())
                 if name in config.active_requests:
                     config.active_requests.remove(name)
                     config.active_chat = '[' + name + ']$~'

@@ -27,7 +27,9 @@ def main():
         for current_socket in ready_to_read:
             # new connection
             if current_socket is server_socket:
-                establish_connection.handle_user(server_socket)
+                establish_connection.connect(server_socket)
+            elif current_socket not in config.clients.values():
+                establish_connection.handle_user(current_socket)
             else:
 
                 print("New data received: ")

@@ -20,7 +20,7 @@ def echo(string):
     sys.stdout.flush()
 
 
-def posix_inputimeout(prompt='|', timeout=DEFAULT_TIMEOUT):
+def posix_inputimeout(prompt='', timeout=DEFAULT_TIMEOUT):
     echo(prompt)
     sel = selectors.DefaultSelector()
     sel.register(sys.stdin, selectors.EVENT_READ)
@@ -35,7 +35,7 @@ def posix_inputimeout(prompt='|', timeout=DEFAULT_TIMEOUT):
         raise TimeoutOccurred
 
 
-def win_inputimeout(prompt='|', timeout=DEFAULT_TIMEOUT, verbose=False):
+def win_inputimeout(prompt='', timeout=DEFAULT_TIMEOUT, verbose=False):
     global err
     echo(prompt)
     begin = time.monotonic()

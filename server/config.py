@@ -9,6 +9,7 @@ clients = {}  # active clients - {"uname":client_socket}
 
 private_requests = {}  # active requests - {"Uname1":"Uname2"}
 active_private = {}  # active private chats - {"Uname1":"Uname2"}
+socket_addresses = {}  # active sockets and their address - {socket, address}
 
 
 def open_db():

@@ -48,7 +48,6 @@ def pwd():
     return prompt(questions, style=style)['pwd']
 
 
-
 def log_screen():
     # Using PyInquirer for Dropdown menu interface
     questions = [
@@ -61,11 +60,11 @@ def log_screen():
         }
     ]
 
-    while True:
-        config.client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)  # socket initialization
-        config.client.connect(('127.0.0.1', 5555))  # connecting client to server
-        answers = prompt(questions, style=style)
+    config.client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)  # socket initialization
+    config.client.connect(('127.0.0.1', 5555))  # connecting client to server
 
+    while True:
+        answers = prompt(questions, style=style)
         print(answers['log'])
 
         if answers['log'] == 'login':
@@ -78,7 +77,7 @@ def log_screen():
             continue
         config.client.send(data.encode())
         data = config.client.recv(1024).decode()
-
+        print(data)
         if data == const.login_successfully_code:
             os.system("cls")
             print("")
@@ -87,7 +86,6 @@ def log_screen():
             return True
 
         else:
-            config.client.close()
             cprint("incorrect credentials", "red")
             print(" ")
 
@@ -129,10 +127,13 @@ def menu():
         if private_chat.create_private_chat_request(ans2['user']):
             if private_chat.wait_for_connection():
                 chat_IO.write_thread.start()
-                chat_IO.print_thread.start()
+                chat_IO.print_incoming()
+                print("hello")
+
     elif ans['start'] == 'wait for a request':
         if private_chat.wait_for_connection():
             chat_IO.write_thread.start()
-            chat_IO.print_thread.start()
+            chat_IO.print_incoming()
+            print("hello")
     elif ans['start'] == 'exit':
         config.running = False

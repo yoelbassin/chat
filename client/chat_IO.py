@@ -1,4 +1,6 @@
 import threading
+import time
+
 import const
 import config
 import private_chat
@@ -14,6 +16,7 @@ def write():
     """
     config.flag = True
     while config.flag:  # message layout
+        time.sleep(0.2)
         try:
             config.lock = False
             message = inputimeout(timeout=5)
@@ -36,6 +39,7 @@ def write():
 def print_incoming():
     config.flag = True
     while config.flag:
+        time.sleep(0.2)
         if config.lock:
             continue
         try:

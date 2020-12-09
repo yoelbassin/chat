@@ -1,12 +1,25 @@
+import select
 import config
 from config import *
 import const
 
 
-def handle_user(server_socket):
+def connect(server_socket):
     client_socket, client_address = server_socket.accept()
-    code = client_socket.recv(const.CODE_LEN).decode().upper()
-    data = client_socket.recv(1024).decode()
+    print("New connection: ", client_address)
+    config.client_sockets.append(client_socket)
+    config.socket_addresses[client_socket] = client_address
+
+
+def handle_user(client_socket):
+    try:
+        code = client_socket.recv(const.CODE_LEN).decode().upper()
+        data = client_socket.recv(1024).decode()
+    except ConnectionResetError:
+        print(config.socket_addresses[client_socket], ' disconnected')
+        config.client_sockets.remove(client_socket)
+        config.socket_addresses.pop(client_socket)
+        return
     print(data)
     print(config.users)
     if code == const.login_code:
@@ -19,11 +32,8 @@ def handle_user(server_socket):
             client_socket.send("User already connected".encode())
             return
         if uname in config.users and config.users[uname] == pwd:
-            print("New connection: ", client_address, " nickname: " + uname)
+            print(uname + ' connected')
             client_socket.send(const.login_successfully_code.encode())
-            for client in config.client_sockets:
-                client.send((uname + " connected!").encode())
-            config.client_sockets.append(client_socket)
             config.clients[uname] = client_socket
         else:
             client_socket.send("wrong credentials".encode())
@@ -41,11 +51,8 @@ def handle_user(server_socket):
             return
         else:
             config.users[uname] = pwd
-            print("New user joined\nconnection: ", client_address, " nickname: " + uname)
+            print("New user joined\nnickname: " + uname)
             client_socket.send(const.login_successfully_code.encode())
-            for client in config.client_sockets:
-                client.send((uname + " connected!").encode())
-            config.client_sockets.append(client_socket)
             config.clients[uname] = client_socket
             update_db()
             print("updated")

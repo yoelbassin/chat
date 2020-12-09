@@ -4,6 +4,7 @@ import ui
 import threading
 import sys
 import chat_IO
+import time
 
 
 def receive():
@@ -23,6 +24,7 @@ def receive():
             if message != '':
                 # send the message to the que
                 config.incoming_que.append(message)
+        time.sleep(0.2)
 
 
 def main():
@@ -37,6 +39,7 @@ def main():
     while config.running:
         if not chat_IO.write_thread.is_alive() and not chat_IO.print_thread.is_alive():
             ui.menu()
+        time.sleep(0.2)
 
 
 receive_thread = threading.Thread(target=receive, daemon=True)  # receiving multiple messages
