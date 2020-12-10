@@ -37,14 +37,15 @@ def main():
         print("exiting")
         return
     receive_thread.start()
+    timeout.err = False
+    config.in_chat = False
     ui.menu()
+    chat_IO.write_thread.start()
+    chat_IO.print_thread.start()
     while config.running:
-        if not config.flag:
+        if not config.in_chat:
             timeout.err = False
-            print(chat_IO.write_thread.is_alive())
-            print(chat_IO.print_thread.is_alive())
-            if not chat_IO.print_thread.is_alive() and not chat_IO.write_thread.is_alive():
-                ui.menu()
+            ui.menu()
         time.sleep(1)
 
 

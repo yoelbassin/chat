@@ -13,7 +13,7 @@ lock = False
 
 active_chat = ''
 
-flag = True  #
+in_chat = True  #
 
 running = True
 

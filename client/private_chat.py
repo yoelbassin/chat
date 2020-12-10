@@ -71,7 +71,7 @@ def handle_chat(message):
 
 def exit_private_chat():
     config.active_chat = ''
-    config.flag = False
+    config.in_chat = False
     config.client.send(const.exit_private.encode())
 
 
@@ -81,10 +81,9 @@ def wait_for_connection():
 
     :return:
     """
-    config.flag = True
     animation_c = 0
     animation = ['|', '/', '-', '\\']
-    while config.flag:  # making valid connection
+    while True:  # making valid connection
         try:
             if not config.incoming_que:
                 sys.stdout.write('\rwaiting ' + animation[animation_c % 4])
@@ -111,6 +110,7 @@ def wait_for_connection():
                 name = config.rem_req(packet)
                 print("chat with " + name + " started")
                 config.active_chat = '[' + name + ']$~'
+                config.in_chat = True
                 return True
 
             elif code == const.private_chat_request_sent_code:

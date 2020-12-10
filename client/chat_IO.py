@@ -14,9 +14,10 @@ def write():
 
     :return:
     """
-    config.flag = True
-    while config.flag:  # message layout
+    while True:  # message layout
         time.sleep(0.2)
+        if not config.in_chat:
+            continue
         try:
             config.lock = False
             message = inputimeout(timeout=5)
@@ -24,7 +25,8 @@ def write():
             cprint(message, 'white')
             if message == '\x1b':
                 private_chat.exit_private_chat()
-                break
+                config.in_chat = False
+                continue
         except TimeoutOccurred:
             continue
         if len(config.active_requests) > 0:
@@ -37,10 +39,9 @@ def write():
 
 
 def print_incoming():
-    config.flag = True
-    while config.flag:
+    while True:
         time.sleep(0.2)
-        if config.lock:
+        if not config.in_chat:
             continue
         try:
             if not config.incoming_que:
@@ -74,8 +75,8 @@ def print_incoming():
 
             elif code == const.end_chat_code:
                 print("Chat with " + config.active_chat + " ended")
-                config.flag = False
-                return private_chat.exit_private_chat()
+                private_chat.exit_private_chat()
+                config.in_chat = False
 
             elif code == const.private_chat_denied_code:
                 src = packet[5:]
