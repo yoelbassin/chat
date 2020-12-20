@@ -79,8 +79,9 @@ def answer_chat_req(client_socket, msg):
 
         # if everything is ok, create a chat room
         config.active_private[config.clients[src]] = config.clients[dst]
-
+        # send to the source that the request was accepted
         config.clients[src].send((const.private_chat_accepted_code + dst).encode())
+        # send to the destination that the request was accepted
         config.clients[dst].send((const.private_chat_accepted_code + src).encode())
 
         print("chat created")

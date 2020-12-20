@@ -1,5 +1,6 @@
 import json
 import private_chat
+import bcrypt
 
 MAX_MSG_LENGTH = 1024
 SERVER_PORT = 5555
@@ -7,6 +8,8 @@ SERVER_IP = '0.0.0.0'
 users = {}  # all clients - {"uname":"pwd"}
 client_sockets = []  # active connections - [client_socket]
 clients = {}  # active clients - {"uname":client_socket}
+
+HASH_ITER = 1000
 
 private_requests = {}  # active requests - {"Uname1":"Uname2"}
 active_private = {}  # active private chats - {"Uname1":"Uname2"}
@@ -59,3 +62,7 @@ def end_connection_with_socket(client_socket):
     if uname in private_requests.values():
         private_requests.pop(get_by_value(uname, private_requests))
     client_socket.close()
+
+
+def create_password(pwd, salt):
+    hashed = ''

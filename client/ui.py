@@ -10,6 +10,7 @@ import os
 import private_chat
 import main
 import chat_IO
+import ssl
 
 style = style_from_dict({
     Token.QuestionMark: '#E91E63 bold',
@@ -60,7 +61,12 @@ def log_screen():
         }
     ]
 
-    config.client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)  # socket initialization
+    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)  # socket initialization
+    ssl.CERT_REQUIRED = False
+    context = ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
+    context.load_verify_locations('cert.pem')
+    context.check_hostname = False
+    config.client = context.wrap_socket(sock)
     config.client.connect(('127.0.0.1', 5555))  # connecting client to server
 
     while True:
@@ -76,7 +82,7 @@ def log_screen():
         else:
             continue
         config.client.send(data.encode())
-        data = config.client.recv(1024).decode()
+        data = config.client.recv(4096).decode()
         print(data)
         if data == const.login_successfully_code:
             os.system("cls")

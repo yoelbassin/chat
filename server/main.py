@@ -7,13 +7,15 @@ import const
 import config
 import establish_connection
 import private_chat
+import ssl
 
 
 def main():
     open_db()
 
     print(config.users)
-
+    context = ssl.create_default_context(ssl.Purpose.CLIENT_AUTH)
+    context.load_cert_chain(certfile="cert.pem", keyfile='key.pem')
     print("Setting up server...")
     server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     server_socket.bind((SERVER_IP, SERVER_PORT))
@@ -27,7 +29,7 @@ def main():
         for current_socket in ready_to_read:
             # new connection
             if current_socket is server_socket:
-                establish_connection.connect(server_socket)
+                establish_connection.connect(server_socket, context)
             elif current_socket not in config.clients.values():
                 establish_connection.handle_user(current_socket)
             else:

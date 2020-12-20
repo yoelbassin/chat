@@ -18,7 +18,7 @@ def receive():
         ready = select.select([config.client], [], [])
         if ready:
             try:
-                message = config.client.recv(1024).decode()
+                message = config.client.recv(4096).decode()
             except ConnectionResetError:
                 config.running = False
                 break

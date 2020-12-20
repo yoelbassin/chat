@@ -35,7 +35,7 @@ def establish_connection():
             continue
         config.client.send(data.encode())
         time.sleep(1)
-        data = config.client.recv(1024).decode()
+        data = config.client.recv(4096).decode()
         print(data)
         if 'Hello' in data:
             return True
