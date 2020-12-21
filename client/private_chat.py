@@ -19,7 +19,6 @@ def key_ex():
 def get_key(key):
     key = key[5:].split(' ')
     config.dst_pub = rsa.PublicKey(int(key[0]), int(key[1]))
-    print(config.dst_pub)
 
 
 def recv_private_chat_request(packet):

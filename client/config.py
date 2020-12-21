@@ -22,8 +22,6 @@ running = True
 def rem_req(packet):
     code = packet[:const.CODE_LEN]
     name = packet[5:]
-    print(packet)
-    print(name)
     if name in active_requests:
         active_requests.remove(name)
         client.send(const.close_private_request_code.encode())
