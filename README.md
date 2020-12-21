@@ -6,8 +6,7 @@ To run the chat application on your computer download the client folder and run
 
 for the client. Make sure that python 3.8 is installed on your device (the app is not compatible with python 3.9 due to unsupported libraries) It may return some errors about packages that are not installed, so you can just enter:
 
-```pip install X``` (where X is the missing python package)
-
+```pip install PKG_NAME``` 
 or:
 
 ```pip install -r requirements.txt``` (add ```sudo``` if you are using Linux)
