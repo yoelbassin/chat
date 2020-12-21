@@ -122,16 +122,15 @@ def answer_chat_req(client_socket, msg):
         return
 
 
-def handle_chat(client_socket, msg):
+def handle_chat(client_socket, msg, code):
     """
     handle an active chat
 
+    :param code:
     :param msg:
     :param client_socket:
     :return:
     """
-    code = msg[:const.CODE_LEN].upper()
-
     # get the destination socket
     if client_socket in config.active_private:
         dst = config.active_private[client_socket]
@@ -140,23 +139,20 @@ def handle_chat(client_socket, msg):
     else:
         return const.private_chat_not_exist
 
+    if type(msg) != bytes:
+        msg = msg.encode()
+
     # if the code type is 'EXITP', end the private chat connection and update the destination
     if code == const.exit_private:
         end_chat(client_socket)
         return const.exit_private
 
-    # if the data type is a message, forward it to the destination
-    if code == const.msg_code:
-        data = const.msg_code
-    else:
-        data = code
-
     # forward the data to the destination
     try:
-        data += msg[const.CODE_LEN:]
+        data = code.encode() + msg
     except ConnectionResetError:
         return const.disconnected
-    dst.send(data.encode())
+    dst.send(data)
     # return that everything is ok
     return const.success
 

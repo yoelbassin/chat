@@ -9,6 +9,17 @@ import timeout
 from termcolor import cprint
 import keyboard
 import threading
+import rsa
+
+
+def key_ex():
+    config.client.send((const.public_key + str(config.public_key.n) + ' ' + str(config.public_key.e)).encode())
+
+
+def get_key(key):
+    key = key[5:].split(' ')
+    config.dst_pub = rsa.PublicKey(int(key[0]), int(key[1]))
+    print(config.dst_pub)
 
 
 def recv_private_chat_request(packet):
@@ -66,7 +77,8 @@ def create_private_chat_request(name):
 
 
 def handle_chat(message):
-    config.client.send((const.msg_code + message).encode())
+    encrypted_message = rsa.encrypt(message.encode(), config.dst_pub)
+    config.client.send(const.msg_code.encode() + encrypted_message)
 
 
 def exit_private_chat():
@@ -111,6 +123,7 @@ def wait_for_connection():
                 print("chat with " + name + " started")
                 config.active_chat = '[' + name + ']$~'
                 config.in_chat = True
+                key_ex()
                 return True
 
             elif code == const.private_chat_request_sent_code:

@@ -33,3 +33,5 @@ disconnected = 'DISCN'
 success = 'SUCSES'
 exit_private = 'EXITP'
 private_chat_not_exist = 'PNEER'
+
+public_key = 'PUBKY'

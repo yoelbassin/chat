@@ -6,6 +6,8 @@ import sys
 import chat_IO
 import time
 import timeout
+import const
+import rsa
 
 
 def receive():
@@ -18,7 +20,13 @@ def receive():
         ready = select.select([config.client], [], [])
         if ready:
             try:
-                message = config.client.recv(4096).decode()
+                message = config.client.recv(4096)
+                code = message[:const.CODE_LEN].decode()
+                if code == const.msg_code:
+                    message = rsa.decrypt(message[const.CODE_LEN:], config.private_key)
+                    message = code + message.decode()
+                else:
+                    message = message.decode()
             except ConnectionResetError:
                 config.running = False
                 break

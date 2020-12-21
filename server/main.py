@@ -36,13 +36,17 @@ def main():
 
                 print("New data received: ")
                 try:
-                    msg = current_socket.recv(config.MAX_MSG_LENGTH).decode()
+                    packet = current_socket.recv(config.MAX_MSG_LENGTH)
+                    code = packet[:const.CODE_LEN].decode()
+                    msg = packet[const.CODE_LEN:]
+                    print(msg)
+                    if code != const.msg_code:
+                        msg = code + msg.decode()
                 # if an error has occurred, close the connection with the socket
-                except ConnectionResetError:
+                except ConnectionResetError or ConnectionAbortedError:
                     config.end_connection_with_socket(current_socket)
                     continue
 
-                code = msg[:5].upper()
 
                 print(code)
 
@@ -63,8 +67,8 @@ def main():
                     private_chat.close_private_request(current_socket)
 
                 # if code is close existing private chat
-                elif code in [const.msg_code, const.exit_private]:
-                    private_chat.handle_chat(current_socket, msg)
+                elif code in [const.msg_code, const.exit_private, public_key]:
+                    private_chat.handle_chat(current_socket, msg, code)
 
                 # if the connection have been closed, close the connection with the socket
                 elif code == '' or code == 'EXIT':

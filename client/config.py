@@ -1,6 +1,7 @@
 import socket
 import collections
 import const
+import rsa
 
 uname = ''
 
@@ -25,3 +26,8 @@ def rem_req(packet):
         active_requests.remove(name)
         client.send(const.close_private_request_code.encode())
     return name
+
+
+public_key, private_key = rsa.newkeys(1024)
+dst_pub = None
+

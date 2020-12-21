@@ -49,6 +49,9 @@ def print_incoming():
             packet = config.incoming_que.popleft()
             code = packet[:5]
 
+            if code == const.public_key:
+                private_chat.get_key(packet[5:])
+
             # if code is a private chat request code
             if code == const.private_chat_request_code:
                 config.lock = True
@@ -58,6 +61,7 @@ def print_incoming():
             elif code == const.private_chat_accepted_code:
                 name = packet[5:].split('~')[0]
                 print("private chat started with " + name)
+                private_chat.key_ex()
                 if name in config.active_requests:
                     config.active_requests.remove(name)
                     config.active_chat = '[' + name + ']$~'
