@@ -132,6 +132,7 @@ def wait_for_connection():
 
             elif code == const.user_not_connected_error:
                 print(config.rem_req(packet) + " not connected")
+                print(config.active_requests)
                 return False
 
             elif code == const.private_chat_denied_code:
@@ -139,6 +140,7 @@ def wait_for_connection():
                 return False
 
             elif code == const.chat_request_pair_error:
+                print(config.active_requests)
                 print("Connection error: Cant connect with " + config.rem_req(
                     packet) + "\nRequest error or request is no longer active")
                 return False

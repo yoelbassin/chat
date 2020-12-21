@@ -1,3 +1,5 @@
+IP = '127.0.0.1'  # '139.162.153.26'
+
 CODE_LEN = 5
 
 error_code = 'ERROR'

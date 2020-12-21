@@ -67,7 +67,7 @@ def log_screen():
     context.load_verify_locations('cert.pem')
     context.check_hostname = False
     config.client = context.wrap_socket(sock)
-    config.client.connect(('139.162.153.26', 5555))  # connecting client to server
+    config.client.connect((const.IP, 5555))  # connecting client to server
 
     while True:
         answers = prompt(questions, style=style)

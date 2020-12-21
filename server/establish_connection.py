@@ -40,6 +40,9 @@ def handle_user(client_socket):
                 print(uname + ' connected')
                 client_socket.send(const.login_successfully_code.encode())
                 config.clients[uname] = client_socket
+            else:
+                client_socket.send("wrong credentials".encode())
+                return
         else:
             client_socket.send("wrong credentials".encode())
             return

@@ -5,6 +5,8 @@ import time
 import ui
 
 
+
+
 def login():
     code = const.login_code
     config.uname = ui.username()
@@ -22,7 +24,7 @@ def register():
 def establish_connection():
     while True:
         config.client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)  # socket initialization
-        config.client.connect(('139.162.153.26', 5555))  # connecting client to server
+        config.client.connect((const.IP, 5555))  # connecting client to server
         code = input("Would you like to login or register? L/R (Q to exit)").upper()
         if code == 'L':
             data = login()

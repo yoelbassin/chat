@@ -41,7 +41,7 @@ def create_request(client_socket, msg):
 
     # if the destination user is not connected to the server
     if dst not in config.clients:
-        client_socket.send(const.user_not_connected_error.encode())
+        client_socket.send((const.user_not_connected_error + dst).encode())
         return
 
     # if the client is connected to the server and everything is ok
@@ -70,7 +70,7 @@ def answer_chat_req(client_socket, msg):
             return"""
         # if the destination user is not connected - error
         if dst not in config.clients:
-            config.clients[src].send(const.user_not_connected_error.encode())
+            config.clients[src].send((const.user_not_connected_error + dst).encode())
             print("user not connected")
             return
 
