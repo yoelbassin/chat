@@ -22,7 +22,7 @@ def register():
 def establish_connection():
     while True:
         config.client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)  # socket initialization
-        config.client.connect(('127.0.0.1', 5555))  # connecting client to server
+        config.client.connect(('139.162.153.26', 5555))  # connecting client to server
         code = input("Would you like to login or register? L/R (Q to exit)").upper()
         if code == 'L':
             data = login()

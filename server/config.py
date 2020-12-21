@@ -4,7 +4,7 @@ import bcrypt
 
 MAX_MSG_LENGTH = 1024
 SERVER_PORT = 5555
-SERVER_IP = '0.0.0.0'
+SERVER_IP = ''
 users = {}  # all clients - {"uname":"pwd"}
 client_sockets = []  # active connections - [client_socket]
 clients = {}  # active clients - {"uname":client_socket}
