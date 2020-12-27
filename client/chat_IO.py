@@ -6,6 +6,7 @@ import config
 import private_chat
 from timeout import inputimeout, TimeoutOccurred
 from termcolor import colored, cprint
+import cryptog
 
 
 def write():
@@ -21,7 +22,7 @@ def write():
         try:
             config.lock = False
             message = inputimeout(timeout=5)
-            cprint('[' + config.uname + ']$~', 'magenta', end='')
+            cprint('[' + config.uname + ']$~', 'magenta', attrs=['bold'], end='')
             cprint(message, 'white')
             if message == '\x1b':
                 private_chat.exit_private_chat()
@@ -50,10 +51,14 @@ def print_incoming():
             code = packet[:5]
 
             if code == const.public_key:
-                private_chat.get_key(packet[5:])
+                cryptog.get_key(packet[5:])
+                cryptog.send_symmetric_key()
+
+            elif code == const.symmetric_key:
+                cryptog.get_symmetric_key(packet[5:])
 
             # if code is a private chat request code
-            if code == const.private_chat_request_code:
+            elif code == const.private_chat_request_code:
                 config.lock = True
                 private_chat.recv_private_chat_request(packet)
 
@@ -61,16 +66,16 @@ def print_incoming():
             elif code == const.private_chat_accepted_code:
                 name = packet[5:].split('~')[0]
                 print("private chat started with " + name)
-                private_chat.key_ex()
+                cryptog.key_ex()
                 if name in config.active_requests:
                     config.active_requests.remove(name)
-                    config.active_chat = '[' + name + ']$~'
+                    config.active_chat = name
 
             # if code is message code
             elif code == const.msg_code:
                 message = packet[5:]
                 if message != '':
-                    cprint(config.active_chat, 'blue', end='')
+                    cprint('[' + config.active_chat + ']$~', 'cyan', attrs=['bold'], end='')
                     cprint(message, 'white')
 
             elif code == const.private_chat_request_sent_code:

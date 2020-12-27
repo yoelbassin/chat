@@ -8,6 +8,7 @@ import time
 import timeout
 import const
 import rsa
+import cryptog
 
 
 def receive():
@@ -22,9 +23,8 @@ def receive():
             try:
                 message = config.client.recv(4096)
                 code = message[:const.CODE_LEN].decode()
-                if code == const.msg_code:
-                    message = rsa.decrypt(message[const.CODE_LEN:], config.private_key)
-                    message = code + message.decode()
+                if code in [const.msg_code, const.symmetric_key]:
+                    message = cryptog.get_enc_message(message)
                 else:
                     message = message.decode()
             except ConnectionResetError:

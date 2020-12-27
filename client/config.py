@@ -30,4 +30,4 @@ def rem_req(packet):
 
 public_key, private_key = rsa.newkeys(1024)
 dst_pub = None
-
+chat_key = None

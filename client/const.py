@@ -1,4 +1,4 @@
-IP = '139.162.153.26'
+IP = '127.0.0.1' #'139.162.153.26'
 
 CODE_LEN = 5
 
@@ -37,3 +37,5 @@ exit_private = 'EXITP'
 private_chat_not_exist = 'PNEER'
 
 public_key = 'PUBKY'
+
+symmetric_key = 'SYMKY'

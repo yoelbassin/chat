@@ -10,15 +10,7 @@ from termcolor import cprint
 import keyboard
 import threading
 import rsa
-
-
-def key_ex():
-    config.client.send((const.public_key + str(config.public_key.n) + ' ' + str(config.public_key.e)).encode())
-
-
-def get_key(key):
-    key = key[5:].split(' ')
-    config.dst_pub = rsa.PublicKey(int(key[0]), int(key[1]))
+import cryptog
 
 
 def recv_private_chat_request(packet):
@@ -51,7 +43,7 @@ def answer_private_chat_request(message):
         if message:
             config.client.send((const.accept_private_chat_code + src_name).encode())
             config.active_requests.pop()
-            config.active_chat = '[' + src_name + ']$~'
+            config.active_chat = src_name
             return
 
         # If the invitation is declined, send decline message to the server and remove it from the active requests list
@@ -76,7 +68,10 @@ def create_private_chat_request(name):
 
 
 def handle_chat(message):
-    encrypted_message = rsa.encrypt(message.encode(), config.dst_pub)
+    # encrypted_message = rsa.encrypt(message.encode(), config.dst_pub)
+    # print(encrypted_message)
+    # config.client.send(const.msg_code.encode() + encrypted_message)
+    encrypted_message = cryptog.encrypt_message(message)
     config.client.send(const.msg_code.encode() + encrypted_message)
 
 
@@ -120,9 +115,9 @@ def wait_for_connection():
             elif code == const.private_chat_accepted_code:
                 name = config.rem_req(packet)
                 print("chat with " + name + " started")
-                config.active_chat = '[' + name + ']$~'
+                config.active_chat = name
                 config.in_chat = True
-                key_ex()
+                cryptog.key_ex()
                 return True
 
             elif code == const.private_chat_request_sent_code:

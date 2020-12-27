@@ -40,7 +40,7 @@ def main():
                     code = packet[:const.CODE_LEN].decode()
                     msg = packet[const.CODE_LEN:]
                     print(msg)
-                    if code != const.msg_code:
+                    if code not in [const.msg_code, const.symmetric_key]:
                         msg = code + msg.decode()
                 # if an error has occurred, close the connection with the socket
                 except ConnectionResetError or ConnectionAbortedError:
@@ -67,7 +67,7 @@ def main():
                     private_chat.close_private_request(current_socket)
 
                 # if code is close existing private chat
-                elif code in [const.msg_code, const.exit_private, public_key]:
+                elif code in [const.msg_code, const.exit_private, public_key, const.symmetric_key]:
                     private_chat.handle_chat(current_socket, msg, code)
 
                 # if the connection have been closed, close the connection with the socket
