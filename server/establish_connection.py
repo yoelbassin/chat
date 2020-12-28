@@ -59,10 +59,10 @@ def handle_user(client_socket):
             client_socket.send("Users already exists".encode())
             return
         elif len(uname) < 2:
-            client_socket.send("Users already exists".encode())
+            client_socket.send("Username too short, at least 2 chars".encode())
             return
         elif len(pwd) < 2:
-            client_socket.send("Users already exists".encode())
+            client_socket.send("Password too short, at least 2 chars".encode())
             return
         else:
             salt = bcrypt.gensalt()
