@@ -110,13 +110,20 @@ def new_connection(uname):
     return ans
 
 
+def help_ui():
+    print('Welcome!\n')
+    print('When you are in waiting mode, you can press q to exit (if you have an active request, '
+          'it will be automatically cancelled)\n')
+    print('when you are in an active chat, you can press [esc] and than [enter] to end the session\n')
+
+
 def menu():
     questions = [
         {
             'type': 'list',
             'name': 'start',
             'message': 'MENU:',
-            'choices': ['create private chat', 'wait for a request', 'exit'],
+            'choices': ['create private chat', 'wait for a request', 'exit', 'help'],
         }
     ]
     ans = prompt(questions, style=style)
@@ -144,3 +151,6 @@ def menu():
     elif ans['start'] == 'exit':
         config.in_chat = False
         config.running = False
+    elif ans['start'] == 'help':
+        help_ui()
+        menu()

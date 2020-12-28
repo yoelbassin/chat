@@ -46,6 +46,7 @@ def handle_user(client_socket):
         else:
             client_socket.send("wrong credentials".encode())
             return
+
     if code == const.register_code:
         print(data)
         if len(data.split("~")) != 2:
@@ -55,6 +56,12 @@ def handle_user(client_socket):
         pwd = data.split("~")[1]
         # TO DO - password confirmation
         if uname in config.users:
+            client_socket.send("Users already exists".encode())
+            return
+        elif len(uname) < 2:
+            client_socket.send("Users already exists".encode())
+            return
+        elif len(pwd) < 2:
             client_socket.send("Users already exists".encode())
             return
         else:
