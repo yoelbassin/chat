@@ -13,3 +13,9 @@ Note that the app is meant for windows, so there can be some visual problems in 
 1. Create private group chats, i.e. Invite only
 2. Create Public Chat rooms
 
+![welcome](https://github.com/yoelbassin/chat/blob/main/Images/welcome.jpeg?raw=true)
+![Login](https://github.com/yoelbassin/chat/blob/main/Images/login.jpeg?raw=true)
+![Menu](https://github.com/yoelbassin/chat/blob/main/Images/menu.jpeg?raw=true)
+![Invite](https://github.com/yoelbassin/chat/blob/main/Images/invite.jpeg?raw=true)
+![chat](https://github.com/yoelbassin/chat/blob/main/Images/chat.jpeg?raw=true)
+
